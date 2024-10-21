@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # dbstat        Display a histogram of MySQL and PostgreSQL query latencies.
 #

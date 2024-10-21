@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # bitehist.py   Block I/O size histogram.
 #               For Linux, uses BCC, eBPF. See .c file.

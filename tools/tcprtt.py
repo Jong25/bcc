@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # @lint-avoid-python-3-compatibility-imports
 #
 # tcprtt    Summarize TCP RTT as a histogram. For Linux, uses BCC, eBPF.

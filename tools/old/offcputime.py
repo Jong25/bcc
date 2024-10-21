@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # offcputime    Summarize off-CPU time by kernel stack trace
 #               For Linux, uses BCC, eBPF.

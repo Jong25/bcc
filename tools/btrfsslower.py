@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # @lint-avoid-python-3-compatibility-imports
 #
 # btrfsslower  Trace slow btrfs operations.

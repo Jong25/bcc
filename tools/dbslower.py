@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # dbslower      Trace MySQL and PostgreSQL queries slower than a threshold.
 #

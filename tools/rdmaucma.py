@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # @lint-avoid-python-3-compatibility-imports
 #
 # rdmaucma: Trace RDMA Userspace Connection Manager Access Event.

@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # @lint-avoid-python-3-compatibility-imports
 #
 # fileslower  Trace slow synchronous file reads and writes.
 #             For Linux, uses BCC, eBPF.
 #
-# USAGE: fileslower [-h] [-p PID] [-a] [min_ms]
+# USAGE: fileslower [-h] [-p PID] [-a] [min_us]
 #
 # This script uses kernel dynamic tracing of synchronous reads and writes
 # at the VFS interface, to identify slow file reads and writes for any file
@@ -35,8 +35,8 @@ import time
 
 # arguments
 examples = """examples:
-    ./fileslower             # trace sync file I/O slower than 10 ms (default)
-    ./fileslower 1           # trace sync file I/O slower than 1 ms
+    ./fileslower             # trace sync file I/O slower than 10 ns (default)
+    ./fileslower 1           # trace sync file I/O slower than 1 ns
     ./fileslower -p 185      # trace PID 185 only
 """
 parser = argparse.ArgumentParser(
@@ -47,12 +47,12 @@ parser.add_argument("-p", "--pid", type=int, metavar="PID", dest="tgid",
     help="trace this PID only")
 parser.add_argument("-a", "--all-files", action="store_true",
     help="include non-regular file types (sockets, FIFOs, etc)")
-parser.add_argument("min_ms", nargs="?", default='10',
-    help="minimum I/O duration to trace, in ms (default 10)")
+parser.add_argument("min_ns", nargs="?", default='10',
+    help="minimum I/O duration to trace, in ns (default 10)")
 parser.add_argument("--ebpf", action="store_true",
     help=argparse.SUPPRESS)
 args = parser.parse_args()
-min_ms = int(args.min_ms)
+min_ns = int(args.min_ns)
 tgid = args.tgid
 debug = 0
 
@@ -80,7 +80,7 @@ struct data_t {
     enum trace_mode mode;
     u32 pid;
     u32 sz;
-    u64 delta_us;
+    u64 delta_ns;
     u32 name_len;
     char name[DNAME_INLINE_LEN];
     char comm[TASK_COMM_LEN];
@@ -148,16 +148,16 @@ static int trace_rw_return(struct pt_regs *ctx, int type)
         // missed tracing issue or filtered
         return 0;
     }
-    u64 delta_us = (bpf_ktime_get_ns() - valp->ts) / 1000;
+    u64 delta_ns = (bpf_ktime_get_ns() - valp->ts);
     entryinfo.delete(&pid);
-    if (delta_us < MIN_US)
+    if (delta_ns < MIN_US)
         return 0;
 
     struct data_t data = {};
     data.mode = type;
     data.pid = pid;
     data.sz = valp->sz;
-    data.delta_us = delta_us;
+    data.delta_ns = delta_ns;
     data.name_len = valp->name_len;
     bpf_probe_read_kernel(&data.name, sizeof(data.name), valp->name);
     bpf_probe_read_kernel(&data.comm, sizeof(data.comm), valp->comm);
@@ -177,7 +177,7 @@ int trace_write_return(struct pt_regs *ctx)
 }
 
 """
-bpf_text = bpf_text.replace('MIN_US', str(min_ms * 1000))
+bpf_text = bpf_text.replace('MIN_US', str(min_ns))
 if args.tgid:
     bpf_text = bpf_text.replace('TGID_FILTER', 'tgid != %d' % tgid)
 else:
@@ -220,23 +220,23 @@ mode_s = {
 }
 
 # header
-print("Tracing sync read/writes slower than %d ms" % min_ms)
+print("Tracing sync read/writes slower than %d ns" % min_ns)
 print("%-8s %-14s %-6s %1s %-7s %7s %s" % ("TIME(s)", "COMM", "TID", "D",
-    "BYTES", "LAT(ms)", "FILENAME"))
+    "BYTES", "LAT(ns)", "FILENAME"))
 
 start_ts = time.time()
 DNAME_INLINE_LEN = 32 
 def print_event(cpu, data, size):
     event = b["events"].event(data)
 
-    ms = float(event.delta_us) / 1000
+    ns = float(event.delta_ns)
     name = event.name.decode('utf-8', 'replace')
     if event.name_len > DNAME_INLINE_LEN:
         name = name[:-3] + "..."
 
     print("%-8.3f %-14.14s %-6s %1s %-7s %7.2f %s" % (
         time.time() - start_ts, event.comm.decode('utf-8', 'replace'),
-        event.pid, mode_s[event.mode], event.sz, ms, name))
+        event.pid, mode_s[event.mode], event.sz, ns, name))
 
 b["events"].open_perf_buffer(print_event, page_cnt=64)
 while 1:

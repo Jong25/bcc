@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # @lint-avoid-python-3-compatibility-imports
 #
 # uobjnew  Summarize object allocations in high-level languages.

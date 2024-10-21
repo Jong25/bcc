@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # bpflist   Display processes currently using BPF programs and maps,
 #           pinned BPF programs and maps, and enabled probes.

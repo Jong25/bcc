@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # trace         Trace a function and print a trace message based on its
 #               parameters, with an optional filter.

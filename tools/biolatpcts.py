@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # biolatpcts.py  Monitor IO latency distribution of a block device.
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # bindsnoop       Trace IPv4 and IPv6 binds()s.
 #               For Linux, uses BCC, eBPF. Embedded C.

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # SPDX-License-Identifier: <SPDX License Expression>
 # @lint-avoid-python-3-compatibility-imports
 #

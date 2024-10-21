@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #
 # tcpv4tracer   Trace TCP connections.
 #               For Linux, uses BCC, eBPF. Embedded C.

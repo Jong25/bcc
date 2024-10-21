@@ -5,6 +5,7 @@
 .idea
 *~
 
+/tools/
 # Build artifacts
 /build/
 cmake-build-debug
